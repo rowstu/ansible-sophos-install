@@ -1,0 +1,22 @@
+---
+- name: Remove Sophos AV and install Sophos Protection
+  hosts: sophos
+
+  tasks:
+  - name: Get installer and check md5sum
+    get_url:
+      url: http://server.name/scripts/SophosSetup.sh
+      dest: /tmp/SophosSetup.sh
+      checksum: md5:cf1b95a453e00b44a8c8222c753ae52f
+
+  - name: Execute the installer script
+    shell: bash /tmp/SophosSetup.sh --uninstall-sav >> /tmp/sophosupgrade.log
+
+  - name: Read the upgrade log file
+    shell: |
+      cat /tmp/sophosupgrade.log
+    register: file_content
+
+  - name: Print the log file
+    debug:
+      msg: "{{ file_content.stdout }}"
